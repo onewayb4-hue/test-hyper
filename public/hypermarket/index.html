@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة إدارة هايبر زايد ماركت | لوحة تحكم العمليات</title>
+  <!-- خط تجوال وأيقونات FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/style.css?v=7">
+</head>
+<body>
+
+  <!-- صوت التنبيه التلقائي عند وصول أوردر جديد للكاشير -->
+  <audio id="orderNotificationSound" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ============================================================== -->
+  <!-- 1. شاشة الدخول والتسجيل لأول مرة (Authentication View) -->
+  <!-- ============================================================== -->
+  <div id="authScreen" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-logo"><i class="fa-solid fa-store"></i></div>
+        <h2>بوابة إدارة هايبر زايد ماركت</h2>
+        <p>نجع حمادي - شارع المركز بجوار مركز الشرطة | النظام الداخلي الموحد للعمليات</p>
+      </div>
+
+      <!-- تنبيه إعداد أول مرة -->
+      <div id="firstTimeAlert" class="first-time-badge" style="display: none;">
+        <i class="fa-solid fa-crown"></i>
+        <span>تهيئة النظام لأول مرة: يرجى تسجيل بيانات المدير العام للمتجر</span>
+      </div>
+
+      <!-- رسالة خطأ الدخول -->
+      <div id="authErrorMessage" class="alert-error" style="display: none;"></div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <!-- حقل الاسم بالكامل يظهر فقط عند أول تسجيل للمدير -->
+        <div class="form-group" id="groupFullName" style="display: none;">
+          <label><i class="fa-solid fa-id-card"></i> الاسم بالكامل للمدير:</label>
+          <input type="text" id="authFullName" class="form-control" placeholder="مثال: الحاج زايد / م. أحمد">
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> اسم المستخدم:</label>
+          <input type="text" id="authUsername" class="form-control" required placeholder="أدخل اسم المستخدم">
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> كلمة المرور:</label>
+          <input type="password" id="authPassword" class="form-control" required placeholder="أدخل كلمة المرور">
+        </div>
+
+        <button type="submit" class="btn-auth full-width" id="btnAuthSubmit">
+          <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <small><i class="fa-solid fa-shield-halved"></i> نظام مشفر ومحمي خاص بموظفي وإدارة هايبر زايد فقط</small>
+        <div style="margin-top: 10px;">
+          <a href="/" target="_blank" class="text-link"><i class="fa-solid fa-arrow-left"></i> الذهاب إلى متجر العملاء العام</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 2. لوحة التحكم الرئيسية بعد تسجيل الدخول (Dashboard View) -->
+  <!-- ============================================================== -->
+  <div id="dashboardScreen" class="dashboard-wrapper" style="display: none;">
+    
+    <!-- الشريط العلوي للإدارة -->
+    <header class="dash-navbar">
+      <div class="dash-nav-container">
+        <div class="dash-brand">
+          <i class="fa-solid fa-shop"></i>
+          <div>
+            <h3>هايبر زايد ماركت</h3>
+            <small>بوابة الإدارة المركزية</small>
+          </div>
+        </div>
+
+        <!-- التبويبات بحسب الصلاحيات -->
+        <div class="dash-tabs" id="dashTabsContainer">
+          <!-- تظهر الأزرار بحسب دور الموظف -->
+          <button class="tab-btn active" id="tabBtnOrders" onclick="switchTab('orders')">
+            <i class="fa-solid fa-bell"></i> الأوردرات الحية <span class="badge-counter" id="liveOrdersBadge">0</span>
+          </button>
+          
+          <button class="tab-btn" id="tabBtnProducts" onclick="switchTab('products')">
+            <i class="fa-solid fa-boxes-stacked"></i> المنتجات والتفنيط
+          </button>
+          
+          <button class="tab-btn" id="tabBtnReports" onclick="switchTab('reports')">
+            <i class="fa-solid fa-file-excel"></i> الإكسيل الأسبوعي والإحصائيات
+          </button>
+
+          <button class="tab-btn" id="tabBtnMessages" onclick="switchTab('messages')">
+            <i class="fa-solid fa-comments"></i> رسائل وتواصل العملاء <span class="badge-counter" id="liveMessagesBadge" style="background: #0284c7;">0</span>
+          </button>
+
+          <button class="tab-btn" id="tabBtnBanners" onclick="switchTab('banners')">
+            <i class="fa-solid fa-images"></i> شرائح العروض والبانرات
+          </button>
+
+          <button class="tab-btn" id="tabBtnStaff" onclick="switchTab('staff')">
+            <i class="fa-solid fa-users-gear"></i> إدارة الموظفين
+          </button>
+        </div>
+
+        <!-- الملف الشخصي للموظف وزر الخروج -->
+        <div class="dash-user-profile">
+          <div class="user-meta">
+            <strong id="loggedUserName">المدير</strong>
+            <span class="user-role-badge" id="loggedUserRole">المدير العام</span>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="تسجيل الخروج">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- محتوى لوحة التحكم -->
+    <main class="dash-main-content">
+      
+      <!-- ========================================================== -->
+      <!-- تبويب 1: الأوردرات الحية ومتابعة التوصيل (للكاشير والمدير) -->
+      <!-- ========================================================== -->
+      <section id="tabContentOrders" class="tab-pane active">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-receipt text-primary"></i> شاشة استقبال الأوردرات الحية</h2>
+            <p>متابعة فورية للطلبات الواردة، التأكيد برسائل الواتساب، وتحديث حالة التوصيل</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-refresh" onclick="fetchOrders()"><i class="fa-solid fa-rotate"></i> تحديث</button>
+            <div class="audio-toggle-chip">
+              <label><input type="checkbox" id="soundToggle" checked> تنبيه صوتي للطلبات</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- فلاتر الحالات السريعة -->
+        <div class="status-filters">
+          <button class="filter-pill active" onclick="filterOrdersByStatus('all', this)">الكل (<span id="countAll">0</span>)</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('جديد', this)">طلبات جديدة (<span id="countNew">0</span>)</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('قيد التجهيز', this)">قيد التجهيز (<span id="countPrep">0</span>)</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('تمت', this)">تمت بنجاح ✅ (<span id="countDelivered">0</span>)</button>
+          <button class="filter-pill" onclick="filterOrdersByStatus('مرتجع', this)">مرتجع ❌ (<span id="countReturned">0</span>)</button>
+        </div>
+
+        <!-- جدول / كروت الطلبات -->
+        <div class="orders-cards-container" id="ordersContainer">
+          <!-- تظهر بطاقات الأوردرات هنا عبر جافاسكريبت -->
+        </div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- تبويب 2: إدارة المنتجات، الأسعار، والتفنيط (لمسؤول المخزن والمدير) -->
+      <!-- ========================================================== -->
+      <section id="tabContentProducts" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-boxes-packing text-primary"></i> إدارة السلع والأصناف والتفنيط</h2>
+            <p>إضافة منتجات، تعديل الأسعار، العروض والتخفيضات، والأوزان</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-primary" onclick="openAddProductModal()">
+              <i class="fa-solid fa-plus"></i> إضافة منتج جديد
+            </button>
+            <button class="btn-secondary" onclick="openAddCategoryModal()">
+              <i class="fa-solid fa-folder-plus"></i> إضافة قسم / فئة جديدة
+            </button>
+          </div>
+        </div>
+
+        <!-- إدارة الفئات والأقسام والرسوم المصورة -->
+        <div class="dash-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 42px; height: 42px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+              <div>
+                <h4 style="margin: 0; font-size: 1.05rem; color: #1e293b;">فئات وأقسام المتجر والرسوم المصورة (<span id="catTotalBadge">0</span> فئات)</h4>
+                <p style="margin: 3px 0 0 0; font-size: 0.84rem; color: #64748b;">تتحكم هنا في أسماء الأقسام والرسوم المصورة التوضيحية التي تظهر للعملاء في نافذة "جميع الفئات"</p>
+              </div>
+            </div>
+            <button class="btn-primary" onclick="openAddCategoryModal()">
+              <i class="fa-solid fa-folder-plus"></i> إضافة قسم جديد
+            </button>
+          </div>
+
+          <!-- شبكة بطاقات الأقسام للإدارة والتحكم في الرسوم والأسماء -->
+          <div class="admin-categories-grid" id="adminCategoriesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;">
+            <!-- يتم توليد كروت الأقسام هنا -->
+          </div>
+        </div>
+
+        <!-- جدول المنتجات -->
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>الصورة</th>
+                <th>اسم المنتج</th>
+                <th>القسم (التفنيط)</th>
+                <th>نوع البيع</th>
+                <th>السعر الأساسي</th>
+                <th>سعر العرض (خصم)</th>
+                <th>المخزون</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <!-- صفوف المنتجات -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- تبويب 3: تصدير الإكسيل الأسبوعي والإحصائيات (للمدير العام) -->
+      <!-- ========================================================== -->
+      <section id="tabContentReports" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-file-excel text-success"></i> تقرير المبيعات الأسبوعي والإحصائيات</h2>
+            <p>ملف إكسيل شامل لكل الأوردرات، التواريخ، الأصناف، الأسعار، وحالات التوصيل (تمت / مرتجع)</p>
+          </div>
+          <div class="pane-actions">
+            <a href="/api/reports/excel" class="btn-excel-download">
+              <i class="fa-solid fa-download"></i> تحميل شيت الإكسيل الأسبوعي (Excel / CSV)
+            </a>
+          </div>
+        </div>
+
+        <!-- كروت الإحصائيات المالية -->
+        <div class="kpi-grid">
+          <div class="kpi-card green">
+            <i class="fa-solid fa-sack-dollar"></i>
+            <div>
+              <span class="label">إجمالي المبيعات الناجحة</span>
+              <strong id="kpiTotalSales">0 ج.م</strong>
+            </div>
+          </div>
+          <div class="kpi-card blue">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <span class="label">أوردرات تمت بنجاح</span>
+              <strong id="kpiDeliveredCount">0 طلب</strong>
+            </div>
+          </div>
+          <div class="kpi-card red">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <div>
+              <span class="label">أوردرات مرتجعة</span>
+              <strong id="kpiReturnedCount">0 طلب</strong>
+            </div>
+          </div>
+          <div class="kpi-card orange">
+            <i class="fa-solid fa-wallet"></i>
+            <div>
+              <span class="label">محصل فودافون كاش وإنستاباي</span>
+              <strong id="kpiWalletsSales">0 ج.م</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- جدول معاينة شيت الإكسيل -->
+        <div class="excel-preview-box">
+          <div class="preview-header">
+            <h4><i class="fa-solid fa-table"></i> معاينة شيت الإكسيل الجاهز للتحميل:</h4>
+            <small>الملف يفتح مباشرة في برنامج Microsoft Excel بتنسيق وترميز عربي سليم 100%</small>
+          </div>
+          <!-- صندوق حالة إرسال إيميلات التنشيط عبر جوجل -->
+        <div class="email-settings-card" id="emailSettingsBox" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div id="emailStatusIconCircle" style="width: 48px; height: 48px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+              <i class="fa-solid fa-envelope-open-text"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <h4 style="margin: 0; font-size: 1.05rem; color: #1e293b;">خدمة إرسال إيميل التنشيط عبر Google (Gmail SMTP)</h4>
+                <span id="emailStatusBadge" style="font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #fef3c7; color: #92400e;">قيد الانتظار (وضع التجربة)</span>
+              </div>
+              <p id="emailStatusDesc" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">
+                ملف الإعدادات: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a;">إعدادات_البريد/بيانات_الجيميل.txt</code> (يمكنك وضع إيميلك وكلمة مرور التطبيقات في أي وقت).
+              </p>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn-refresh" onclick="checkEmailStatus(true)"><i class="fa-solid fa-rotate"></i> فحص الحالة</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="dash-table mini-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>التاريخ والوقت</th>
+                  <th>اسم العميل</th>
+                  <th>رقم الهاتف</th>
+                  <th>المدينة والعنوان</th>
+                  <th>الأصناف المطلوبة</th>
+                  <th>الإجمالي</th>
+                  <th>طريقة الدفع</th>
+                  <th>حالة الأوردر</th>
+                  <th>سبب الإرجاع / ملاحظات</th>
+                </tr>
+              </thead>
+              <tbody id="excelPreviewTableBody">
+                <!-- صفوف المعاينة -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- تبويب 4: إدارة حسابات الموظفين والصلاحيات (للمدير العام) -->
+      <!-- ========================================================== -->
+      <section id="tabContentStaff" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-users-gear text-primary"></i> إدارة الموظفين والصلاحيات</h2>
+            <p>إضافة وتعديل حسابات الكاشير ومسؤول المخزن والمنتجات</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-primary" onclick="openAddStaffModal()">
+              <i class="fa-solid fa-user-plus"></i> إضافة موظف جديد
+            </button>
+          </div>
+        </div>
+
+        <!-- صندوق حالة إرسال إيميلات التنشيط عبر جوجل -->
+        <div class="email-settings-card" id="emailSettingsBox" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div id="emailStatusIconCircle" style="width: 48px; height: 48px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+              <i class="fa-solid fa-envelope-open-text"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <h4 style="margin: 0; font-size: 1.05rem; color: #1e293b;">خدمة إرسال إيميل التنشيط عبر Google (Gmail SMTP)</h4>
+                <span id="emailStatusBadge" style="font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #fef3c7; color: #92400e;">قيد الانتظار (وضع التجربة)</span>
+              </div>
+              <p id="emailStatusDesc" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">
+                ملف الإعدادات: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a;">إعدادات_البريد/بيانات_الجيميل.txt</code> (يمكنك وضع إيميلك وكلمة مرور التطبيقات في أي وقت).
+              </p>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn-refresh" onclick="checkEmailStatus(true)"><i class="fa-solid fa-rotate"></i> فحص الحالة</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>اسم الموظف</th>
+                <th>اسم الدخول (Username)</th>
+                <th>كلمة المرور الحالية</th>
+                <th>الرتبة والصلاحية</th>
+                <th>تاريخ الإنشاء</th>
+                <th>إجراءات التحكم والصلاحيات</th>
+              </tr>
+            </thead>
+            <tbody id="staffTableBody">
+              <!-- قائمة الموظفين -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- تبويب 5: رسائل وتواصل العملاء (واردة من زر تواصل معنا) -->
+      <!-- ========================================================== -->
+      <section id="tabContentMessages" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-comments text-primary"></i> رسائل واستفسارات تواصل معنا</h2>
+            <p>الرسائل والشكاوى والاقتراحات المرسلة من العملاء عبر الموقع</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-refresh" onclick="fetchMessages()"><i class="fa-solid fa-rotate"></i> تحديث الرسائل</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>كود الرسالة</th>
+                <th>تاريخ الإرسال</th>
+                <th>اسم العميل</th>
+                <th>رقم الهاتف</th>
+                <th>الموضوع</th>
+                <th>نص الرسالة / الاستفسار</th>
+                <th>الحالة</th>
+                <th>الموظف المتواصل (الكود)</th>
+                <th>إجراءات والتواصل</th>
+              </tr>
+            </thead>
+            <tbody id="messagesTableBody">
+              <!-- صفوف الرسائل -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- تبويب 6: إدارة شرائح العروض والبانرات المتحركة (Slideshow) -->
+      <!-- ========================================================== -->
+      <section id="tabContentBanners" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2><i class="fa-solid fa-images text-primary"></i> إدارة شرائح العروض والبانرات (Slideshow)</h2>
+            <p>التحكم في صور البانرات المعروضة في المستطيل الأخضر بالصفحة الرئيسية وسرعة التنقل بينها</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-primary" onclick="openAddBannerModal()">
+              <i class="fa-solid fa-plus"></i> إضافة شريحة / بانر جديد
+            </button>
+          </div>
+        </div>
+
+        <!-- كارت إعدادات وقت التبديل التلقائي -->
+        <div class="dash-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+            <div>
+              <h4 style="margin: 0; font-size: 1rem; color: #1e293b;">سرعة التبديل التلقائي بين الشرائح</h4>
+              <p style="margin: 3px 0 0 0; font-size: 0.84rem; color: #64748b;">تحدد كل كم ثانية يتم الانتقال أوتوماتيكياً للصورة التالية في متجر العملاء</p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <label style="font-size: 0.9rem; font-weight: 700; color: #334155;">الفترة الزمنية:</label>
+            <select id="bannerIntervalSelect" class="form-control" style="width: 170px; font-weight: 700;" onchange="updateBannerInterval()">
+              <option value="2">كل ثانيتين (2 ث)</option>
+              <option value="3" selected>كل 3 ثواني (الافتراضي)</option>
+              <option value="4">كل 4 ثواني (4 ث)</option>
+              <option value="5">كل 5 ثواني (5 ث)</option>
+              <option value="6">كل 6 ثواني (6 ث)</option>
+              <option value="8">كل 8 ثواني (8 ث)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- شبكة عرض الشرائح الحالية -->
+        <div class="banners-admin-grid" id="adminBannersContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+          <!-- يتم توليد كروت البانرات بالجافاسكريبت -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- النوافذ المنبثقة للوحة التحكم -->
+  <!-- ============================================================== -->
+
+  <!-- نافذة تسجيل سبب الإرجاع للمرتجع -->
+  <div class="modal-overlay" id="returnReasonModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-ban"></i></div>
+        <div>
+          <h3>تسجيل حالة مرتجع للطلب (<span id="returnOrderIdLabel"></span>)</h3>
+          <p>يرجى كتابة سبب الإرجاع لتدوينه في شيت الإكسيل والحسابات</p>
+        </div>
+        <button class="close-btn" onclick="closeReturnModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>سبب الإرجاع:</label>
+          <select id="returnReasonPreset" class="form-control" onchange="handleReturnPresetChange()">
+            <option value="العميل لم يستجب للاتصال وقت التوصيل">العميل لم يستجب للاتصال وقت التوصيل</option>
+            <option value="رفض الاستلام بسبب التأخر">رفض الاستلام بسبب التأخر</option>
+            <option value="العنوان غير صحيح أو خارج نطاق التوصيل">العنوان غير صحيح أو خارج نطاق التوصيل</option>
+            <option value="صنف غير مطابق للمطلوب أو تالف">صنف غير مطابق للمطلوب أو تالف</option>
+            <option value="أخرى">سبب آخر (كتابة يدوية)</option>
+          </select>
+        </div>
+        <div class="form-group" id="groupCustomReturnReason" style="display: none;">
+          <label>اكتب السبب بالتفصيل:</label>
+          <input type="text" id="returnReasonCustom" class="form-control" placeholder="اكتب السبب بالتفصيل...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-danger full-width" onclick="confirmReturnOrder()">
+          <i class="fa-solid fa-circle-xmark"></i> تأكيد تسجيل الطلب كمرتجع
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة منتج جديد -->
+  <div class="modal-overlay" id="addProductModal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-box-open"></i></div>
+        <div>
+          <h3>إضافة منتج جديد للهايبر</h3>
+          <p>أدخل بيانات السلعة والأسعار ونوع البيع (بالوزن أو القطعة)</p>
+        </div>
+        <button class="close-btn" onclick="closeAddProductModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="newProductForm" onsubmit="handleNewProductSubmit(event)">
+          <div class="form-group">
+            <label class="required-label">اسم المنتج:</label>
+            <input type="text" id="newProdName" class="form-control" required placeholder="مثال: جبنة رومي بطارخ أو أرز فاخر">
+          </div>
+
+          <div class="form-group">
+            <label class="required-label">القسم (التفنيط):</label>
+            <select id="newProdCategory" class="form-control" required>
+              <!-- أقسام ديناميكية -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="required-label">نوع البيع والتسعير:</label>
+            <select id="newProdSaleType" class="form-control" onchange="handleSaleTypeChange()" required>
+              <option value="piece">بالقطعة / العبوة (Piece)</option>
+              <option value="weight">بالوزن أو الجنيه (كيلو / جرام) - خضار وفاكهة وأجبان ولحوم</option>
+              <option value="egg">بيض مائدة (بالعدد أو الكرتونة أو بالجنيه)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label id="labelBasePrice" class="required-label">سعر البيع (جنيه):</label>
+              <input type="number" id="newProdPrice" class="form-control" required min="1" step="0.5" placeholder="مثال: 50">
+            </div>
+            <div class="form-group col-half">
+              <label>سعر العرض (إذا كان مخفضاً):</label>
+              <input type="number" id="newProdOfferPrice" class="form-control" min="1" step="0.5" placeholder="مثال: 42 (اختياري)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>رابط صورة المنتج (أو صورة تجريبية):</label>
+            <input type="url" id="newProdImage" class="form-control" placeholder="https://images.unsplash.com/...">
+          </div>
+
+          <div class="form-group">
+            <label>وصف المنتج وتفاصيل التخزين:</label>
+            <textarea id="newProdDesc" class="form-control" rows="2" placeholder="أدخل تفاصيل ومكونات السلعة"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary full-width" style="margin-top: 10px;">
+            <i class="fa-solid fa-check"></i> حفظ ونشر المنتج في المتجر
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة موظف جديد -->
+  <div class="modal-overlay" id="addStaffModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-user-shield"></i></div>
+        <div>
+          <h3>إضافة حساب موظف جديد</h3>
+          <p>تحديد الصلاحية واسم المستخدم وكلمة السر</p>
+        </div>
+        <button class="close-btn" onclick="closeAddStaffModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="newStaffForm" onsubmit="handleNewStaffSubmit(event)">
+          <div class="form-group">
+            <label class="required-label">الاسم بالكامل:</label>
+            <input type="text" id="newStaffFullName" class="form-control" required placeholder="مثال: محمد كاشير المساء">
+          </div>
+          <div class="form-group">
+            <label class="required-label">اسم المستخدم (للدخول):</label>
+            <input type="text" id="newStaffUsername" class="form-control" required placeholder="مثال: mohamed_cashier">
+          </div>
+          <div class="form-group">
+            <label class="required-label">كلمة المرور:</label>
+            <input type="password" id="newStaffPassword" class="form-control" required placeholder="كلمة مرور الموظف">
+          </div>
+          <div class="form-group">
+            <label class="required-label">الرتبة والصلاحية:</label>
+            <select id="newStaffRole" class="form-control" required>
+              <option value="cashier">الكاشير (استقبال وتأكيد الطلبات وتحديث التوصيل والواتساب)</option>
+              <option value="stock_manager">مسؤول المنتجات والمخزن (تعديل الأسعار وإضافة المنتجات والتفنيط)</option>
+              <option value="admin">مدير فرع (صلاحية كاملة وإكسيل)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary full-width" style="margin-top: 10px;">
+            <i class="fa-solid fa-user-check"></i> إنشاء حساب الموظف
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تغيير / تعيين كلمة سر جديدة للموظف (Admin Password Reset Modal) -->
+  <div class="modal-overlay" id="resetPasswordModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #fef3c7; color: #b45309;"><i class="fa-solid fa-key"></i></div>
+        <div>
+          <h3>تعيين كلمة سر جديدة للموظف</h3>
+          <p>بصفتك المدير العام: يمكنك تغيير كلمة السر مباشرة حتى لو نسي الموظف كلمته القديمة</p>
+        </div>
+        <button class="close-btn" onclick="closeResetPasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <!-- كارت بيانات الموظف المستهدف -->
+        <div class="target-user-info" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong id="resetTargetFullName" style="font-size: 1.05rem; color: #0f172a; display: block;">اسم الموظف</strong>
+            <small style="color: #64748b;">اسم الدخول: <code id="resetTargetUsername" style="color: #0284c7; font-weight: bold; background: #e0f2fe; padding: 2px 6px; border-radius: 4px;">username</code></small>
+          </div>
+          <span class="user-role-badge" id="resetTargetRole">الكاشير</span>
+        </div>
+
+        <form id="resetPasswordForm" onsubmit="handleResetPasswordSubmit(event)">
+          <input type="hidden" id="resetTargetUserId">
+
+          <div class="form-group">
+            <label class="required-label">كلمة السر الجديدة:</label>
+            <div style="position: relative; display: flex; align-items: center;">
+              <input type="text" id="resetNewPasswordInput" class="form-control" required placeholder="اكتب كلمة السر الجديدة هنا" style="padding-left: 70px; font-weight: bold; font-size: 1rem; color: #0f172a;">
+              <button type="button" onclick="generateRandomPassword()" title="توليد كلمة سر سهلة" style="position: absolute; left: 6px; border: none; background: #e0f2fe; color: #0284c7; padding: 6px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> توليد
+              </button>
+            </div>
+            <small style="color: #64748b; font-size: 0.8rem; margin-top: 6px; display: block;">
+              💡 يمكنك كتابة كلمة سر سهلة (مثل <code>123456</code> أو <code>zayed2026</code>) أو الضغط على زر "توليد".
+            </small>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" class="btn-primary" style="flex: 1;">
+              <i class="fa-solid fa-check"></i> حفظ وتفعيل كلمة السر فوراً
+            </button>
+            <button type="button" class="btn-secondary" onclick="closeResetPasswordModal()">
+              إلغاء
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة وتعديل قسم / فئة (مع الرسوم المصورة) -->
+  <div class="modal-overlay" id="addCategoryModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #dcfce7; color: #15803d;"><i class="fa-solid fa-folder-plus"></i></div>
+        <div>
+          <h3 id="catModalTitle">إضافة قسم / فئة جديدة</h3>
+          <p>تظهر في قائمة "جميع الفئات" لمتجر العملاء بالرسوم الخاصة بها</p>
+        </div>
+        <button class="close-btn" onclick="closeAddCategoryModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="newCategoryForm" onsubmit="handleCategorySubmit(event)">
+          <input type="hidden" id="editCatId" value="">
+          <div class="form-group">
+            <label class="required-label">اسم الفئة / القسم:</label>
+            <input type="text" id="newCatName" class="form-control" required placeholder="مثال: الفواكه والخضروات">
+          </div>
+          <div class="form-group">
+            <label>الأيقونة (إيموجي):</label>
+            <input type="text" id="newCatIcon" class="form-control" placeholder="مثال: 🥦 أو 🧀 أو 🥩" value="🛒">
+          </div>
+          <div class="form-group">
+            <label class="required-label">رابط الرسم / الصورة التوضيحية (الرسوم الخاصة بالقسم):</label>
+            <input type="url" id="newCatImage" class="form-control" required placeholder="https://images.unsplash.com/...">
+            <small style="color: #64748b; font-size: 0.8rem; margin-top: 6px; display: block;">
+              💡 نماذج ورسوم جاهزة وسريعة للاختيار المباشر:
+            </small>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('الفواكه والخضروات', '🥦', 'https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format&fit=crop&q=80', 'خضروات وفواكه طازجة يومياً فرز أول')">🥦 فواكه وخضار</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('الألبان، البيض والجبنة', '🧀', 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=600&auto=format&fit=crop&q=80', 'أجبان طبيعية، حليب وبيض طازج يومياً')">🧀 ألبان وجبن</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('اللحوم والدواجن والأسماك', '🥩', 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=600&auto=format&fit=crop&q=80', 'ذبح يومي محلي بلدي بإشراف بيطري')">🥩 لحوم</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('الحلويات والمخبوزات', '🥐', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80', 'مخبوزات طازجة، كيك وحلويات')">🥐 حلويات</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('البقالة الجافة والمؤن', '🥫', 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600&auto=format&fit=crop&q=80', 'أرز، سكر، زيوت ومؤن')">🥫 بقالة</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('المشروبات والعصائر والمياه', '🧃', 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=80', 'عصائر ومياه غازية ومعدنية')">🧃 مشروبات</button>
+              <button type="button" class="btn-preset-chip" onclick="setCatPreset('المنظفات والعناية المنزلية', '🧼', 'https://images.unsplash.com/photo-1585421514738-01798e348b17?w=600&auto=format&fit=crop&q=80', 'مساحيق غسيل ومطهرات منزلية')">🧼 منظفات</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>وصف توضيحي للفئة:</label>
+            <input type="text" id="newCatDesc" class="form-control" placeholder="وصف يظهر تحت اسم الفئة">
+          </div>
+          <button type="submit" id="btnSaveCategory" class="btn-primary full-width" style="margin-top: 10px;">
+            <i class="fa-solid fa-floppy-disk"></i> حفظ الفئة ونشرها
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة شريحة / بانر جديد -->
+  <div class="modal-overlay" id="addBannerModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #dcfce7; color: #15803d;"><i class="fa-solid fa-image"></i></div>
+        <div>
+          <h3>إضافة شريحة عرض جديدة (Banner)</h3>
+          <p>تظهر في المستطيل الأخضر بالصفحة الرئيسية للمتجر</p>
+        </div>
+        <button class="close-btn" onclick="closeAddBannerModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="addBannerForm" onsubmit="handleAddBannerSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="required-label">رابط صورة البانر (مستطيلة بالعرض):</label>
+            <input type="url" id="bannerImageUrl" class="form-control" required placeholder="https://images.unsplash.com/...">
+            <small style="color: #64748b; font-size: 0.8rem; margin-top: 6px; display: block;">
+              💡 يمكنك الضغط على أي زر سريع لاختيار صورة مقترحة تلقائياً:
+            </small>
+            <!-- نماذج جاهزة وسريعة للاختيار -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+              <button type="button" class="btn-preset-chip" onclick="setPresetBannerImg('https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&auto=format&fit=crop&q=80', 'مهرجان الطازج واللحوم البلدية', 'ذبح يومي وتوفير حتى 20%', 'عروض يومية 🔥', 'butchery')">🥩 لحوم</button>
+              <button type="button" class="btn-preset-chip" onclick="setPresetBannerImg('https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=1200&auto=format&fit=crop&q=80', 'عروض منتجات الألبان والأجبان', 'أجبان طبيعية طازجة يومياً', 'أسعار خاصة 🧀', 'dairy')">🧀 ألبان</button>
+              <button type="button" class="btn-preset-chip" onclick="setPresetBannerImg('https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=1200&auto=format&fit=crop&q=80', 'خضروات وفواكه طازجة من المزرعة', 'تصلك بسلسلة تبريد مجهزة', 'فرز أول 🥦', 'produce')">🥦 خضار</button>
+              <button type="button" class="btn-preset-chip" onclick="setPresetBannerImg('https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=1200&auto=format&fit=crop&q=80', 'توصيل سريع للمنازل', 'خدمة 24 ساعة في نجع حمادي وفرشوط', 'توصيل 24/7 🛵', 'all')">🛵 توصيل</button>
+              <button type="button" class="btn-preset-chip" onclick="setPresetBannerImg('https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=1200&auto=format&fit=crop&q=80', 'عروض وتخفيضات البقالة الكبرى', 'أسعار لا تقبل المنافسة وجودة عالية', 'تخفيضات كبرى 🛒', 'pantry')">🥫 بقالة</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label class="required-label">عنوان الشريحة الرئيسي:</label>
+              <input type="text" id="bannerTitle" class="form-control" required placeholder="مثال: مهرجان اللحوم الطازجة">
+            </div>
+            <div class="form-group col-half">
+              <label>الشارة العلوية (Badge):</label>
+              <input type="text" id="bannerBadge" class="form-control" placeholder="مثال: عروض يومية 🔥">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label>النص الفرعي / الوصف:</label>
+              <input type="text" id="bannerSubtitle" class="form-control" placeholder="مثال: خصم 20% لفترة محدودة">
+            </div>
+            <div class="form-group col-half">
+              <label>القسم المرتبط عند الضغط:</label>
+              <select id="bannerLinkCategory" class="form-control">
+                <option value="all">كل الأقسام</option>
+                <option value="butchery">لحوم ودواجن وأسماك</option>
+                <option value="dairy">ألبان وأجبان ومجمدات</option>
+                <option value="produce">خضروات وفواكه طازجة</option>
+                <option value="pantry">بقالة جافة ومؤن</option>
+                <option value="bakery">مخبوزات وحلويات</option>
+                <option value="beverages">مشروبات وعصائر ومياه</option>
+                <option value="household">منظفات وعناية منزلية</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeAddBannerModal()">إلغاء</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> حفظ ونشر الشريحة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/app.js?v=8"></script>
+</body>
+</html>

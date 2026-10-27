@@ -1,0 +1,537 @@
+{
+  "customers": [],
+  "messages": [],
+  "banners": [
+    {
+      "id": "banner_1",
+      "title": "مهرجان الطازج واللحوم البلدية",
+      "badge": "عروض يومية 🔥",
+      "subtitle": "ذبح يومي محلي وتوفير حتى 20% في قسم الجزارة",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&auto=format&fit=crop&q=80",
+      "linkCategory": "butchery"
+    },
+    {
+      "id": "banner_2",
+      "title": "عروض قسم الألبان والأجبان الطازجة",
+      "badge": "أسعار خاصة 🧀",
+      "subtitle": "تشكيلة واسعة من الجبن والألبان الطبيعية يومياً",
+      "image": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=1200&auto=format&fit=crop&q=80",
+      "linkCategory": "dairy"
+    },
+    {
+      "id": "banner_3",
+      "title": "خضار وفواكه طازجة من المزرعة لبيتك",
+      "badge": "فرز أول 🥦",
+      "subtitle": "تصلك بسلسلة تبريد مجهزة تحافظ على نضارتها",
+      "image": "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=1200&auto=format&fit=crop&q=80",
+      "linkCategory": "produce"
+    },
+    {
+      "id": "banner_4",
+      "title": "توصيل سريع للمنازل في نجع حمادي وفرشوط",
+      "badge": "خدمة 24 ساعة 🛵",
+      "subtitle": "طلبك يوصلك لباب البيت في أسرع وقت وبأعلى دقة",
+      "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=1200&auto=format&fit=crop&q=80",
+      "linkCategory": "all"
+    }
+  ],
+  "bannerSettings": {
+    "intervalSeconds": 3,
+    "autoplay": true
+  },
+  "users": [
+    {
+      "id": "user_admin_1",
+      "username": "admin",
+      "password": "admin",
+      "fullName": "المدير العام (هايبر زايد)",
+      "role": "admin",
+      "roleTitle": "المدير العام",
+      "createdAt": "2026-10-27T17:00:00.000Z"
+    },
+    {
+      "id": "user_1793118153295",
+      "username": "s20",
+      "password": "123",
+      "fullName": "سامى",
+      "role": "cashier",
+      "roleTitle": "الكاشير ومستقبل الطلبات",
+      "createdAt": "2026-10-27T16:22:33.295Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "produce",
+      "name": "الفواكه والخضروات",
+      "icon": "🥦",
+      "image": "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format&fit=crop&q=80",
+      "description": "خضروات وفواكه طازجة يومياً فرز أول"
+    },
+    {
+      "id": "dairy",
+      "name": "الألبان، البيض والجبنة",
+      "icon": "🧀",
+      "image": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=600&auto=format&fit=crop&q=80",
+      "description": "أجبان طبيعية، حليب وبيض طازج يومياً"
+    },
+    {
+      "id": "butchery",
+      "name": "اللحوم والدواجن والأسماك",
+      "icon": "🥩",
+      "image": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=600&auto=format&fit=crop&q=80",
+      "description": "ذبح يومي محلي بلدي بإشراف بيطري"
+    },
+    {
+      "id": "bakery",
+      "name": "الحلويات والمخبوزات",
+      "icon": "🥐",
+      "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
+      "description": "مخبوزات طازجة، كيك وحلويات شرقية وغربية"
+    },
+    {
+      "id": "pantry",
+      "name": "البقالة الجافة والمؤن",
+      "icon": "🥫",
+      "image": "https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600&auto=format&fit=crop&q=80",
+      "description": "أرز، سكر، زيوت، بقوليات ومؤن تموينية"
+    },
+    {
+      "id": "beverages",
+      "name": "المشروبات والعصائر والمياه",
+      "icon": "🧃",
+      "image": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=80",
+      "description": "عصائر طبيعية، مياه غازية ومياه معدنية"
+    },
+    {
+      "id": "household",
+      "name": "المنظفات والعناية المنزلية",
+      "icon": "🧼",
+      "image": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=600&auto=format&fit=crop&q=80",
+      "description": "مساحيق غسيل، مطهرات ومستلزمات العناية بالمنزل"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_1",
+      "name": "طماطم بلدي طازجة فرز أول",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 25,
+      "offerPrice": 18,
+      "allowedWeights": [
+        0.25,
+        0.5,
+        1,
+        2
+      ],
+      "stock": 200,
+      "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format&fit=crop&q=80",
+      "description": "طماطم بلدي فرز أول طازجة يومياً مناسبة للسلطة والطهي."
+    },
+    {
+      "id": "prod_2",
+      "name": "بطاطس تحمير وطهي ممتازة",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 30,
+      "offerPrice": 24,
+      "allowedWeights": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "stock": 250,
+      "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop&q=80",
+      "description": "بطاطس عالية الجودة مقرمشة في التحمير."
+    },
+    {
+      "id": "prod_3",
+      "name": "لحم بقري بلدي طازج (كندوز)",
+      "category": "butchery",
+      "saleType": "weight",
+      "pricePerKg": 420,
+      "offerPrice": 385,
+      "allowedWeights": [
+        0.5,
+        1,
+        1.5,
+        2
+      ],
+      "stock": 60,
+      "image": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=500&auto=format&fit=crop&q=80",
+      "description": "ذبح يومي محلي بإشراف بيطري. متوفر تقطيع مكعبات أو مفروم."
+    },
+    {
+      "id": "prod_4",
+      "name": "صدور بانيه فراخ طازجة نظيفة",
+      "category": "butchery",
+      "saleType": "weight",
+      "pricePerKg": 240,
+      "offerPrice": 220,
+      "allowedWeights": [
+        0.5,
+        1,
+        1.5
+      ],
+      "stock": 80,
+      "image": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=500&auto=format&fit=crop&q=80",
+      "description": "بانيه دجاج طازج يومياً مغسول ومجهز للطهي مباشرة."
+    },
+    {
+      "id": "prod_5",
+      "name": "جبنة رومي قديمة بطارخ دمياطي",
+      "category": "dairy",
+      "saleType": "weight",
+      "pricePerKg": 360,
+      "offerPrice": 325,
+      "allowedWeights": [
+        0.25,
+        0.5,
+        1
+      ],
+      "stock": 75,
+      "image": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=500&auto=format&fit=crop&q=80",
+      "description": "جبنة رومي بلدي طبيعية معتقة ذات مذاق مصري أصيل."
+    },
+    {
+      "id": "prod_6",
+      "name": "حليب جهينة كامل الدسم 1 لتر",
+      "category": "dairy",
+      "saleType": "piece",
+      "price": 45,
+      "offerPrice": 42,
+      "stock": 300,
+      "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500&auto=format&fit=crop&q=80",
+      "description": "حليب طبيعي 100% معقم وطويل الأجل."
+    },
+    {
+      "id": "prod_7",
+      "name": "زيت خليط الممتاز 700 مل",
+      "category": "pantry",
+      "saleType": "piece",
+      "price": 55,
+      "offerPrice": 48,
+      "stock": 180,
+      "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500&auto=format&fit=crop&q=80",
+      "description": "زيت نقي خفيف ممتاز للطهي والتحمير والسلطات."
+    },
+    {
+      "id": "prod_8",
+      "name": "أرز مصري الساعة عريض الحبة 1 كجم",
+      "category": "pantry",
+      "saleType": "piece",
+      "price": 38,
+      "offerPrice": null,
+      "stock": 400,
+      "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80",
+      "description": "أرز مصري أبيض فاخر منقى ومغسول إلكترونياً."
+    },
+    {
+      "id": "prod_9",
+      "name": "سكر بلدي أبيض ناصع 1 كجم",
+      "category": "pantry",
+      "saleType": "piece",
+      "price": 36,
+      "offerPrice": null,
+      "stock": 500,
+      "image": "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=500&auto=format&fit=crop&q=80",
+      "description": "سكر مكرر عالي الجودة للحلويات والمشروبات."
+    },
+    {
+      "id": "prod_10",
+      "name": "مسحوق غسيل أوتوماتيك أريال لافندر 4 كجم",
+      "category": "household",
+      "saleType": "piece",
+      "price": 285,
+      "offerPrice": 249,
+      "stock": 70,
+      "image": "https://images.unsplash.com/photo-1584813539806-2538b8d918c6?w=500&auto=format&fit=crop&q=80",
+      "description": "نظافة فائقة وإزالة تامة للبقع برائحة اللافندر المنعشة."
+    },
+    {
+      "id": "prod_11",
+      "name": "بيض مائدة أحمر طازج مزارع",
+      "category": "dairy",
+      "saleType": "egg",
+      "price": 5.5,
+      "offerPrice": 5,
+      "pricePerCarton": 155,
+      "stock": 500,
+      "image": "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=500&auto=format&fit=crop&q=80",
+      "description": "بيض مائدة أحمر طازج يومياً مغذى طبيعياً، متاح الشراء بالحبة أو بالكرتونة أو بالجنيه."
+    },
+    {
+      "id": "prod_12",
+      "name": "بيض مائدة أبيض طازج مزارع",
+      "category": "dairy",
+      "saleType": "egg",
+      "price": 5.5,
+      "offerPrice": 5,
+      "pricePerCarton": 150,
+      "stock": 450,
+      "image": "https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=500&auto=format&fit=crop&q=80",
+      "description": "بيض أبيض بلدي فرز أول طازج، متاح الشراء بالعدد أو بالجنيه أو بالطبق."
+    },
+    {
+      "id": "prod_13",
+      "name": "ليمون بلدي بنزهير فرز أول",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 30,
+      "offerPrice": 24,
+      "allowedWeights": [
+        0.25,
+        0.5,
+        1
+      ],
+      "stock": 100,
+      "image": "https://images.unsplash.com/photo-1590502593747-42a996133562?w=500&auto=format&fit=crop&q=80",
+      "description": "ليمون بلدي مروي طازج برائحة قوية وعصير وافر، اشترِ بالوزن أو بالجنيه (مثلاً بـ 5 جنيه)."
+    },
+    {
+      "id": "prod_14",
+      "name": "خيار بلدي صوب طازج مقرمش",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 22,
+      "offerPrice": 16,
+      "allowedWeights": [
+        0.5,
+        1,
+        2
+      ],
+      "stock": 150,
+      "image": "https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=500&auto=format&fit=crop&q=80",
+      "description": "خيار بلدي طازج يومياً ناعم ومقرمش مناسب للسلطة والوجبات."
+    },
+    {
+      "id": "prod_15",
+      "name": "بصل أحمر بلدي خزين نخب أول",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 25,
+      "offerPrice": 19,
+      "allowedWeights": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "stock": 300,
+      "image": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=500&auto=format&fit=crop&q=80",
+      "description": "بصل أحمر بلدي حبة وسط وكبيرة ممتازة للطبخ والخزين."
+    },
+    {
+      "id": "prod_16",
+      "name": "موز بلدي سكري طازج",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 28,
+      "offerPrice": 22,
+      "allowedWeights": [
+        0.5,
+        1,
+        2
+      ],
+      "stock": 120,
+      "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500&auto=format&fit=crop&q=80",
+      "description": "موز بلدي طبيعي مستوي سكري طازج ومغذي يومياً."
+    },
+    {
+      "id": "prod_17",
+      "name": "تفاح أحمر إيطالي سكري فاخر",
+      "category": "produce",
+      "saleType": "weight",
+      "pricePerKg": 85,
+      "offerPrice": 74,
+      "allowedWeights": [
+        0.5,
+        1,
+        2
+      ],
+      "stock": 90,
+      "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&auto=format&fit=crop&q=80",
+      "description": "تفاح أحمر مستورد فرز أول عالي الجودة مقرمش وحلو المذاق."
+    },
+    {
+      "id": "prod_18",
+      "name": "جبنة بيضاء براميلي فلفل دمياطي طبيعي",
+      "category": "dairy",
+      "saleType": "weight",
+      "pricePerKg": 180,
+      "offerPrice": 160,
+      "allowedWeights": [
+        0.25,
+        0.5,
+        1
+      ],
+      "stock": 60,
+      "image": "https://images.unsplash.com/photo-1634487359989-3e90c9432133?w=500&auto=format&fit=crop&q=80",
+      "description": "جبنة بيضاء براميلي طبيعية 100% لبن بلدي مع الفلفل الأخضر، متاح الشراء بالوزن أو بالجنيه."
+    },
+    {
+      "id": "prod_19",
+      "name": "جبنة قريش فلاحي طبيعية زيرو دسم",
+      "category": "dairy",
+      "saleType": "weight",
+      "pricePerKg": 105,
+      "offerPrice": 90,
+      "allowedWeights": [
+        0.25,
+        0.5,
+        1
+      ],
+      "stock": 50,
+      "image": "https://images.unsplash.com/photo-1559561853-08451507cbe7?w=500&auto=format&fit=crop&q=80",
+      "description": "جبنة قريش طازجة فلاحي يومياً خالية من المواد الحافظة وصحية وخفيفة."
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-101",
+      "date": "2026-10-25 14:15",
+      "customerName": "محمود عبد الرحيم",
+      "customerPhone": "01097020001",
+      "city": "فرشوط",
+      "area": "خور الحليمي",
+      "street": "بجوار قطونيل",
+      "serviceType": "delivery",
+      "address": "فرشوط - خور الحليمي، بجوار مدرسة التجارة، عمارة 4",
+      "items": [
+        {
+          "name": "طماطم بلدي طازجة فرز أول",
+          "unit": "1 كجم",
+          "quantity": 1,
+          "price": 18
+        },
+        {
+          "name": "زيت خليط الممتاز 700 مل",
+          "unit": "قطعة",
+          "quantity": 2,
+          "price": 48
+        }
+      ],
+      "subtotal": 114,
+      "deliveryFee": 15,
+      "total": 129,
+      "paymentMethod": "فودافون كاش",
+      "paymentDetails": "محول من: 01097020001",
+      "status": "تمت",
+      "returnReason": "",
+      "notes": "يرجى رن الجرس عند الوصول",
+      "handledBy": "الكاشير"
+    },
+    {
+      "id": "ORD-102",
+      "date": "2026-10-26 17:30",
+      "customerName": "علي قاسم",
+      "customerPhone": "01003888449",
+      "city": "نجع حمادي",
+      "area": "شرق السكة",
+      "street": "شارع 30",
+      "serviceType": "delivery",
+      "address": "نجع حمادي - شرق السكة، شارع 30، برج الصفوة",
+      "items": [
+        {
+          "name": "لحم بقري بلدي طازج (كندوز)",
+          "unit": "1 كجم",
+          "quantity": 1,
+          "price": 385
+        },
+        {
+          "name": "حليب جهينة كامل الدسم 1 لتر",
+          "unit": "قطعة",
+          "quantity": 2,
+          "price": 42
+        }
+      ],
+      "subtotal": 469,
+      "deliveryFee": 25,
+      "total": 494,
+      "paymentMethod": "إنستاباي",
+      "paymentDetails": "مرجع: IPZAYED88",
+      "status": "تمت",
+      "returnReason": "",
+      "notes": "اللحم مقطع مكعبات كباب حلة",
+      "handledBy": "الكاشير"
+    },
+    {
+      "id": "ORD-103",
+      "date": "2026-10-27 11:00",
+      "customerName": "كريم البدري",
+      "customerPhone": "01122334455",
+      "city": "فرشوط",
+      "area": "المحطة",
+      "street": "ميدان المحطة",
+      "serviceType": "pickup",
+      "address": "استلام ذاتي من فرع هايبر زايد - خور الحليمي",
+      "items": [
+        {
+          "name": "مسحوق غسيل أوتوماتيك أريال لافندر 4 كجم",
+          "unit": "قطعة",
+          "quantity": 1,
+          "price": 249
+        }
+      ],
+      "subtotal": 249,
+      "deliveryFee": 0,
+      "total": 249,
+      "paymentMethod": "الدفع عند الاستلام",
+      "paymentDetails": "دفع كاش في الفرع",
+      "status": "مرتجع",
+      "returnReason": "العميل لم يأتِ للاستلام خلال المهلة المحددة",
+      "notes": "استلام عصراً",
+      "handledBy": "المدير"
+    }
+  ],
+  "settings": {
+    "hypermarketName": "هايبر زايد ماركت - Zayed Market",
+    "locationText": "نجع حمادي - شارع المركز بجوار مركز الشرطة",
+    "hotline": "01003888449",
+    "phones": [
+      "01003888449",
+      "01097020001"
+    ],
+    "whatsappNumber": "201003888449",
+    "vodafoneCashNumber": "01003888449",
+    "instapayAddress": "zayedmarket@instapay",
+    "defaultDeliveryFee": 0,
+    "freeDeliveryThreshold": 500,
+    "cities": [
+      {
+        "name": "نجع حمادي",
+        "areas": [
+          "شارع المركز (بجوار مركز الشرطة)",
+          "شرق السكة",
+          "غرب السكة",
+          "شارع 30",
+          "الساحل",
+          "حي اللواء",
+          "بين المحطات",
+          "مدينة الألومنيوم",
+          "بهجورة",
+          "أولاد نجم",
+          "هوّ",
+          "الرحمانية",
+          "قرى مركز نجع حمادي"
+        ]
+      },
+      {
+        "name": "فرشوط",
+        "areas": [
+          "وسط البلد",
+          "ميدان المحطة",
+          "شارع الجمهورية",
+          "خور الحليمي (بجوار قطونيل)",
+          "حي النادي",
+          "كوم البيجا",
+          "العركي",
+          "الدهسة",
+          "نجع القاضي",
+          "قرى مركز فرشوط"
+        ]
+      }
+    ]
+  }
+}

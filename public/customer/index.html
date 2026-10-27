@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>هايبر زايد ماركت | التسوق الإلكتروني وتوصيل الطلبات</title>
+  <!-- خط تجوال العربي العصري وأيقونات FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/style.css?v=12">
+</head>
+<body>
+
+  <!-- شريط الإعلان والتواصل العلوي -->
+  <header class="top-announcement">
+    <div class="container top-bar-content">
+      <div class="top-info">
+        <span><i class="fa-solid fa-location-dot"></i> الفرع الرئيسي: نجع حمادي - شارع المركز بجوار مركز الشرطة</span>
+        <span class="phone-item"><i class="fa-brands fa-whatsapp"></i> خدمة التوصيل: 01003888449 - 01097020001</span>
+        <span style="color: #4ade80; font-weight: 700;"><i class="fa-solid fa-clock"></i> خدمة 24 ساعة يومياً</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- الهيدر الرئيسي للمتجر -->
+  <nav class="main-navbar">
+    <div class="container nav-content">
+      <div class="brand-logo">
+        <div class="logo-badge">
+          <i class="fa-solid fa-basket-shopping"></i>
+        </div>
+        <div class="brand-text">
+          <h1>هايبر زايد ماركت</h1>
+          <p>خيره زايد</p>
+        </div>
+      </div>
+
+      <!-- محدد الموقع ومحدد نوع الخدمة -->
+      <div class="delivery-picker" id="openLocationModalBtn" onclick="openLocationModal()">
+        <i class="fa-solid fa-location-crosshairs picker-icon"></i>
+        <div class="picker-text">
+          <span class="label">التوصيل إلى:</span>
+          <strong id="currentLocationBadge">نجع حمادي - شارع المركز</strong>
+        </div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+
+      <!-- نوع الخدمة (توصيل للمنزل / استلام من الفرع) -->
+      <div class="service-switcher">
+        <button class="switch-btn active" id="btnServiceDelivery" onclick="setServiceType('delivery')">
+          <i class="fa-solid fa-motorcycle"></i> توصيل للمنزل
+        </button>
+        <button class="switch-btn" id="btnServicePickup" onclick="setServiceType('pickup')">
+          <i class="fa-solid fa-store"></i> استلام من الهايبر
+        </button>
+      </div>
+
+      <!-- زر حساب العميل -->
+      <div class="nav-user-account">
+        <button class="user-account-btn" id="userBtn" onclick="openCustomerAuthOrProfile()">
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="userBtnLabel">حسابي / تسجيل</span>
+        </button>
+      </div>
+
+      <!-- زر السلة -->
+      <div class="nav-cart">
+        <button class="cart-btn" id="openCartBtn" onclick="toggleCartModal(true)">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-count" id="cartCountBadge">0</span>
+          <span class="cart-total" id="cartTotalHeader">0 ج.م</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- البانر الرئيسي: معلومات الهايبر وعرض الشرائح المتحرك (Slideshow) -->
+  <section class="hero-section">
+    <div class="container hero-content">
+      <!-- العمود الأيمن: النصوص ومفتاح العروض وشريط البحث -->
+      <div class="hero-info-col">
+        <div class="hero-text">
+          <h2>كل احتياجات بيتك.. من الخضار واللحوم للبقالة بضغطة زر!</h2>
+          <p>نخدم أهالينا في <strong>نجع حمادي وفرشوط</strong> مع خدمة توصيل سريعة وسلسلة تبريد للأغذية الطازجة.</p>
+          
+          <!-- مفتاح تشغيل/إلغاء العروض -->
+          <div class="offers-toggle-wrapper">
+            <label class="offers-switch">
+              <input type="checkbox" id="offersToggleCheckbox" onchange="toggleOffersOnly(this.checked)">
+              <span class="slider"></span>
+            </label>
+            <div class="offers-label">
+              <span class="title"><i class="fa-solid fa-fire-flame-curved text-danger"></i> عروض وتخفيضات هايبر زايد</span>
+              <small id="offersStatusText">اضغط لتصفية المنتجات ذات الأسعار المخفضة فقط</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- شريط البحث السريع -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="ابحث عن سلعة، خضار، جبنة، زيت، أرز..." oninput="filterProducts()">
+        </div>
+      </div>
+
+      <!-- العمود الأيسر: عرض الشرائح المتحرك ذو الزوايا الدائرية (Carrefour / Amazon Fresh Slideshow) -->
+      <div class="hero-slider-col">
+        <div class="hero-slider-box" id="heroSliderBox" onmouseenter="pauseBannerAutoplay()" onmouseleave="resumeBannerAutoplay()">
+          <!-- حاوية الشرائح المتغيرة -->
+          <div class="hero-slider-track" id="heroSliderTrack">
+            <!-- يتم تحميل الشرائح ديناميكياً من السيرفر -->
+            <div class="slide-item active slide-skeleton">
+              <div class="slide-skeleton-content">
+                <i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل العروض...
+              </div>
+            </div>
+          </div>
+
+          <!-- أزرار التنقل يمين ويسار -->
+          <button class="slider-nav-btn prev-btn" onclick="prevSlide(event)" aria-label="الشريحة السابقة" title="السابق">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button class="slider-nav-btn next-btn" onclick="nextSlide(event)" aria-label="الشريحة التالية" title="التالي">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+
+          <!-- شريط نقاط المؤشر السفلية (Indicators) -->
+          <div class="slider-dots" id="sliderDotsContainer"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- شريط الأقسام السريع وزر جميع الفئات -->
+  <section class="categories-bar-section">
+    <div class="container categories-bar-wrapper">
+      <!-- زر جميع الفئات البارز -->
+      <button class="btn-all-categories" id="btnOpenAllCategoriesModal" onclick="openAllCategoriesModal()" title="تصفح جميع الفئات والرسوم">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>جميع الفئات</span>
+        <i class="fa-solid fa-chevron-down arrow-cat"></i>
+      </button>
+
+      <!-- شريط الحبوب السريعة القابلة للتمرير -->
+      <div class="categories-scroll" id="categoriesContainer">
+        <button class="cat-pill active" onclick="selectCategory('all', this)">
+          <span class="icon">🛒</span>
+          <span class="name">منتجات هايبر زايد</span>
+        </button>
+        <!-- سيتم ملؤها ديناميكياً من السيرفر -->
+      </div>
+    </div>
+  </section>
+
+  <!-- شبكة عرض المنتجات -->
+  <main class="products-section container">
+    <div class="section-header">
+      <div>
+        <h3 id="currentSectionTitle">المنتجات المتوفرة</h3>
+        <p id="productsCountText">جاري تحميل الأصناف...</p>
+      </div>
+      <div class="section-tag" id="activeFilterTag">جميع المنتجات</div>
+    </div>
+
+    <!-- شبكة الكروت -->
+    <div class="products-grid" id="productsGrid">
+      <!-- المنتجات تظهر هنا عبر جافاسكريبت -->
+    </div>
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- 1. نافذة تحديد الموقع الأولية (التي طلبها المستخدم في بداية الدخول) -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="locationModal">
+    <div class="modal-card location-card">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-map-location-dot"></i></div>
+        <div>
+          <h3>مرحباً بك في هايبر زايد ماركت 🛒</h3>
+          <p>حدد موقعك لعرض المنتجات المتاحة ورسوم التوصيل لمنطقتك</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <!-- زر التحديد التلقائي بالـ GPS -->
+        <button class="btn-gps" onclick="handleAutoGPS()">
+          <i class="fa-solid fa-crosshairs"></i> تحديد موقعي الحالي تلقائياً (GPS)
+        </button>
+
+        <div class="or-separator"><span>أو اختر يدويـاً</span></div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-city"></i> اختر المدينة (نطاق التوصيل):</label>
+          <select id="selectCity" class="form-control" onchange="handleCityChange()">
+            <option value="نجع حمادي">نجع حمادي</option>
+            <option value="فرشوط">فرشوط</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-map-pin"></i> اختر المنطقة:</label>
+          <select id="selectArea" class="form-control">
+            <!-- تتغير ديناميكياً مع المدينة -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-road"></i> الحي / الشارع / تفاصيل العنوان:</label>
+          <input type="text" id="inputStreet" class="form-control" placeholder="مثال: خور الحليمي، بجوار مدرسة التجارة، عمارة 5">
+        </div>
+
+        <div class="checkbox-group">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="checkDefaultAddress" checked>
+            <span class="checkmark"></span>
+            اجعل هذا العنوان الرئيسي للتسوق وحفظ البيانات
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary full-width" onclick="saveLocationAndContinue()">
+          <i class="fa-solid fa-basket-shopping"></i> أكمل التسوق وافتح المتجر
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 2. نافذة سلة المشتريات والفاتورة والدفع -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="cartModal">
+    <div class="modal-card cart-drawer">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div>
+          <h3>سلة المشتريات والفاتورة</h3>
+          <p id="cartItemsSubtitle">راجع طلباتك قبل التأكيد</p>
+        </div>
+        <button class="close-btn" onclick="toggleCartModal(false)"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body cart-body">
+        <!-- قائمة الأصناف في السلة -->
+        <div class="cart-items-list" id="cartItemsList">
+          <!-- عناصر السلة -->
+        </div>
+
+        <!-- ملخص الفاتورة الشفاف -->
+        <div class="invoice-summary">
+          <h4><i class="fa-solid fa-receipt"></i> تفاصيل الفاتورة</h4>
+          <div class="summary-row">
+            <span>قيمة المشتريات:</span>
+            <strong id="invoiceSubtotal">0 ج.م</strong>
+          </div>
+          <div class="summary-row" id="rowDeliveryFee">
+            <span>رسوم التوصيل:</span>
+            <strong style="color: #0284c7; font-size: 0.82rem;"><i class="fa-brands fa-whatsapp"></i> تُحدد وتُرسل في رسالة الواتساب</strong>
+          </div>
+          <div class="summary-row total-row">
+            <span>إجمالي المشتريات:</span>
+            <strong id="invoiceTotal">0 ج.م</strong>
+          </div>
+          <small style="color: #64748b; font-size: 0.75rem; display: block; margin-top: 4px;">* سيتم إبلاغك بتكلفة التوصيل الدقيقة عبر الواتساب بناءً على مسافة العنوان وتسدد للمندوب.</small>
+        </div>
+
+        <!-- بيانات العميل والتواصل والتوصيل -->
+        <div class="checkout-form">
+          <h4><i class="fa-solid fa-user-check"></i> بيانات العميل للتواصل</h4>
+          
+          <div class="form-group">
+            <label>الاسم بالكامل:</label>
+            <input type="text" id="orderCustomerName" class="form-control" placeholder="أدخل اسمك الكريم">
+          </div>
+
+          <div class="form-group">
+            <label class="required-label">رقم الهاتف للتواصل وتأكيد الواتساب:</label>
+            <input type="tel" id="orderCustomerPhone" class="form-control highlight-input" placeholder="مثال: 01003888449">
+            <small class="help-text"><i class="fa-brands fa-whatsapp text-success"></i> سيتم التواصل معك عبر الواتساب فور مراجعة الأوردر وتأكيده.</small>
+          </div>
+
+          <div class="form-group" id="deliveryAddressGroup">
+            <label>عنوان التوصيل الدقيق:</label>
+            <textarea id="orderAddress" class="form-control" rows="2" placeholder="المدينة، المنطقة، الشارع، رقم الشقة أو البيت"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>ملاحظات خاصة على الطلب (تقطيع لحمة، جبنة، توقيت معين...):</label>
+            <input type="text" id="orderNotes" class="form-control" placeholder="اكتب أي رغبة خاصة بفريق التجهيز">
+          </div>
+
+          <!-- اختيار طريقة الدفع -->
+          <div class="payment-selection">
+            <h4><i class="fa-solid fa-credit-card"></i> اختر طريقة الدفع</h4>
+            <div class="payment-options">
+              
+              <label class="payment-card">
+                <input type="radio" name="paymentMethod" value="الدفع عند الاستلام" checked onchange="handlePaymentChange('cod')">
+                <div class="card-inner">
+                  <i class="fa-solid fa-hand-holding-dollar"></i>
+                  <div>
+                    <strong>الدفع عند الاستلام (كاش)</strong>
+                    <small>سدد المبلغ نقداً للمندوب أو عند الاستلام من الفرع</small>
+                  </div>
+                </div>
+              </label>
+
+              <label class="payment-card">
+                <input type="radio" name="paymentMethod" value="فودافون كاش" onchange="handlePaymentChange('vodafone')">
+                <div class="card-inner">
+                  <i class="fa-solid fa-mobile-screen-button text-danger"></i>
+                  <div>
+                    <strong>فودافون كاش / محافظ الموبايل</strong>
+                    <small>تحويل على محفظة هايبر زايد: 01003888449</small>
+                  </div>
+                </div>
+              </label>
+
+              <label class="payment-card">
+                <input type="radio" name="paymentMethod" value="إنستاباي" onchange="handlePaymentChange('instapay')">
+                <div class="card-inner">
+                  <i class="fa-solid fa-bolt text-primary"></i>
+                  <div>
+                    <strong>إنستاباي (InstaPay)</strong>
+                    <small>تحويل لحظي على: zayedmarket@instapay</small>
+                  </div>
+                </div>
+              </label>
+
+            </div>
+
+            <!-- تفاصيل إضافية عند الدفع بفودافون كاش أو إنستاباي -->
+            <div id="paymentExtraDetails" class="payment-extra-box" style="display: none;">
+              <label id="paymentExtraLabel">أدخل الرقم المحول منه أو مرجع العملية:</label>
+              <input type="text" id="paymentDetailsInput" class="form-control" placeholder="اكتب رقمك أو رقم العملية للتأكيد">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-success full-width checkout-submit-btn" id="btnSubmitOrder" onclick="submitOrder()">
+          <i class="fa-solid fa-circle-check"></i> تأكيد الطلب وإرساله للهايبر (<span id="btnPayTotal">0 ج.م</span>)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 3. نافذة نجاح الطلب والتأكيد الفوري -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="orderSuccessModal">
+    <div class="modal-card success-card text-center">
+      <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+      <h3>تم استلام طلبك بنجاح!</h3>
+      <p class="order-id-badge">رقم الطلب: <strong id="successOrderId">#ORD-000</strong></p>
+      
+      <div class="success-details-box">
+        <div class="detail-row">
+          <span><i class="fa-solid fa-clock"></i> الوقت المتوقع للوصول:</span>
+          <strong id="successDeliveryTime" class="text-success">خلال 45 - 60 دقيقة</strong>
+        </div>
+        <div class="detail-row">
+          <span><i class="fa-solid fa-location-dot"></i> العنوان المسجل:</span>
+          <strong id="successAddress">نجع حمادي</strong>
+        </div>
+        <div class="detail-row">
+          <span><i class="fa-solid fa-motorcycle"></i> رسوم التوصيل:</span>
+          <strong style="color: #0284c7;">تُحدد في رسالة الواتساب</strong>
+        </div>
+        <div class="detail-row">
+          <span><i class="fa-solid fa-money-bill-wave"></i> إجمالي قيمة المنتجات:</span>
+          <strong id="successTotal">0 ج.م</strong>
+        </div>
+      </div>
+
+      <div class="whatsapp-alert-box">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>سيصلك إشعار ومتابعة حية عبر الواتساب على رقمك المسجل فور تجهيز الأصناف.</span>
+      </div>
+
+      <button class="btn-primary full-width" onclick="closeSuccessModal()">
+        <i class="fa-solid fa-arrow-rotate-right"></i> تسوق المزيد من هايبر زايد
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 4. الزر العائم للتواصل معنا (يبقى ثابتاً أثناء التمرير) -->
+  <!-- ============================================================== -->
+  <div class="floating-contact-btn" id="floatingContactBtn" onclick="openContactModal()" title="تواصل معنا">
+    <div class="contact-pulse-ring"></div>
+    <i class="fa-solid fa-headset"></i>
+    <span class="floating-text">تواصل معنا</span>
+  </div>
+
+  <!-- نافذة تواصل معنا المنبثقة -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-headset"></i></div>
+        <div>
+          <h3>تواصل مع إدارة هايبر زايد 💬</h3>
+          <p>نسعد بخدمتكم والرد على استفساراتكم واقتراحاتكم 24 ساعة</p>
+        </div>
+        <button class="close-btn" onclick="closeContactModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- أزرار الاتصال الهاتفي السريع -->
+        <div class="quick-call-boxes">
+          <a href="tel:01003888449" class="call-chip"><i class="fa-solid fa-phone"></i> 01003888449</a>
+          <a href="tel:01097020001" class="call-chip"><i class="fa-solid fa-phone"></i> 01097020001</a>
+        </div>
+
+        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+          <div class="form-group">
+            <label class="required-label">الاسم بالكامل:</label>
+            <input type="text" id="contactName" class="form-control" required placeholder="أدخل اسمك الكريم">
+          </div>
+
+          <div class="form-group">
+            <label class="required-label">رقم الهاتف للتواصل:</label>
+            <input type="tel" id="contactPhone" class="form-control" required placeholder="رقم الهاتف أو الواتساب">
+          </div>
+
+          <div class="form-group">
+            <label>نوع التواصل / الاستفسار:</label>
+            <select id="contactSubject" class="form-control">
+              <option value="استفسار عن طلب وتوصيل">استفسار عن طلب وتوصيل</option>
+              <option value="اقتراح صنف غير موجود بالمتجر">اقتراح صنف أو منتج غير موجود</option>
+              <option value="شكوى أو ملاحظة على خدمة">شكوى أو ملاحظة على الخدمة</option>
+              <option value="تواصل عام مع الإدارة">تواصل عام مع الإدارة</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="required-label">نص الرسالة أو الاستفسار:</label>
+            <textarea id="contactMessage" class="form-control" rows="3" required placeholder="اكتب استفسارك أو طلبك بالتفصيل..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-success full-width" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> إرسال الرسالة للإدارة عبر الواتساب
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 5. نافذة تسجيل الدخول وإنشاء حساب للعميل -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="customerAuthModal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="icon-circle"><i class="fa-solid fa-circle-user"></i></div>
+        <div>
+          <h3 id="custAuthTitle">تسجيل الدخول لحسابك</h3>
+          <p>تابع أوردراتك واحفظ منتجاتك المفضلة وعناوينك</p>
+        </div>
+        <button class="close-btn" onclick="closeCustomerAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- أزرار التبديل بين الدخول والإنشاء -->
+        <div class="auth-tabs-nav">
+          <button class="auth-tab-btn active" id="btnTabCustLogin" onclick="switchCustAuthMode('login')">تسجيل الدخول</button>
+          <button class="auth-tab-btn" id="btnTabCustRegister" onclick="switchCustAuthMode('register')">إنشاء حساب جديد</button>
+        </div>
+
+        <!-- رسالة الخطأ -->
+        <div id="custAuthError" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <form id="custLoginForm" onsubmit="handleCustomerLogin(event)">
+          <div class="form-group">
+            <label class="required-label"><i class="fa-solid fa-user-check"></i> رقم الهاتف أو إيميل الجيميل:</label>
+            <input type="text" id="custLoginIdentifier" class="form-control" required placeholder="أدخل رقم هاتفك أو إيميل الجيميل">
+          </div>
+          <div class="form-group">
+            <label class="required-label"><i class="fa-solid fa-lock"></i> كلمة المرور:</label>
+            <input type="password" id="custLoginPassword" class="form-control" required placeholder="أدخل كلمة المرور">
+          </div>
+          <button type="submit" class="btn-primary full-width" style="margin-top: 10px;">
+            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+          </button>
+        </form>
+
+        <!-- نموذج إنشاء حساب جديد (الخطوة 1: البيانات والجيميل) -->
+        <form id="custRegisterForm" onsubmit="handleCustomerSendOtp(event)" style="display: none;">
+          <div class="form-group">
+            <label class="required-label"><i class="fa-solid fa-user"></i> الاسم بالكامل:</label>
+            <input type="text" id="custRegName" class="form-control" required placeholder="أدخل اسمك الكريم">
+          </div>
+          <div class="form-group">
+            <label class="required-label"><i class="fa-brands fa-google text-danger"></i> إيميل الجيميل (Google / Gmail):</label>
+            <input type="email" id="custRegEmail" class="form-control highlight-input" required placeholder="مثال: yourname@gmail.com">
+            <small class="help-text"><i class="fa-solid fa-shield-halved text-success"></i> سيصلك كود تحقق مكوّن من 6 أرقام على هذا الإيميل لتأكيد حسابك.</small>
+          </div>
+          <div class="form-group">
+            <label class="required-label"><i class="fa-solid fa-phone"></i> رقم الهاتف (للتواصل وتأكيد الواتساب):</label>
+            <input type="tel" id="custRegPhone" class="form-control" required placeholder="مثال: 01003888449">
+          </div>
+          <div class="form-group">
+            <label class="required-label"><i class="fa-solid fa-lock"></i> كلمة المرور للحساب:</label>
+            <input type="password" id="custRegPassword" class="form-control" required minlength="4" placeholder="اختر كلمة مرور لحسابك">
+          </div>
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label><i class="fa-solid fa-city"></i> المدينة:</label>
+              <select id="custRegCity" class="form-control">
+                <option value="نجع حمادي">نجع حمادي</option>
+                <option value="فرشوط">فرشوط</option>
+              </select>
+            </div>
+            <div class="form-group col-half">
+              <label><i class="fa-solid fa-map-pin"></i> المنطقة والشارع:</label>
+              <input type="text" id="custRegStreet" class="form-control" placeholder="المنطقة والشارع">
+            </div>
+          </div>
+          <button type="submit" class="btn-primary full-width" style="margin-top: 10px;">
+            <i class="fa-solid fa-paper-plane"></i> إرسال كود التأكيد إلى الجيميل
+          </button>
+        </form>
+
+        <!-- نموذج تأكيد الحساب وإدخال كود الإيميل (الخطوة 2: تأكيد الكود) -->
+        <form id="custVerifyOtpForm" onsubmit="handleCustomerVerifyOtp(event)" style="display: none; text-align: center;">
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+            <i class="fa-solid fa-envelope-circle-check" style="font-size: 2.2rem; color: #16a34a; margin-bottom: 6px;"></i>
+            <h4 style="color: #166534; font-size: 1.05rem;">تفقد بريدك الإلكتروني</h4>
+            <p style="font-size: 0.84rem; color: #475569; margin-top: 4px;">
+              أرسلنا كود تأكيد الحساب إلى إيميلك:<br>
+              <strong id="otpSentToEmail" style="color: #0d6832; font-size: 0.95rem;">example@gmail.com</strong>
+            </p>
+          </div>
+
+          <!-- شارة فورية للتجربة والتسهيل -->
+          <div id="otpDevHelpBox" style="display: none; background: #fef3c7; border: 1px dashed #f59e0b; padding: 10px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 14px;">
+            <span>🔑 كود التأكيد الذي تم إرساله: <strong id="devOtpDisplay" style="font-size: 1.25rem; color: #b45309; letter-spacing: 3px;">000000</strong></span>
+          </div>
+
+          <div class="form-group">
+            <label class="required-label" style="display: block; font-size: 0.95rem; font-weight: 800; margin-bottom: 8px;">
+              أدخل كود التأكيد المكون من 6 أرقام:
+            </label>
+            <input type="text" id="custOtpCodeInput" maxlength="6" class="form-control otp-code-input" required placeholder="______">
+          </div>
+
+          <button type="submit" class="btn-success full-width" style="margin-top: 10px; font-size: 1rem;">
+            <i class="fa-solid fa-circle-check"></i> تأكيد الكود وإنشاء الحساب رسمياً
+          </button>
+
+          <div style="margin-top: 14px; display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <button type="button" class="btn-text-link" onclick="resendOtpCode()"><i class="fa-solid fa-rotate-right"></i> إعادة إرسال الكود</button>
+            <button type="button" class="btn-text-link" onclick="backToRegisterForm()"><i class="fa-solid fa-pen"></i> تعديل البيانات</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 6. نافذة الملف الشخصي للعميل (الطلبات، المفضلة، العناوين، الإعدادات) -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="customerProfileModal">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-user-gear"></i></div>
+        <div>
+          <h3>لوحة تحكم حسابي</h3>
+          <p><span id="profUserName">العميل</span> • <span id="profUserPhone" style="font-weight: 700; color: #0d6832;">0100000000</span></p>
+        </div>
+        <button class="close-btn" onclick="closeCustomerProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px 20px;">
+        <!-- أزرار الأقسام الأربعة المطلوبة -->
+        <div class="profile-tabs-nav">
+          <button class="prof-tab-btn active" id="profTabBtnOrders" onclick="switchProfileTab('orders')">
+            <i class="fa-solid fa-box-open"></i> طلباتي
+          </button>
+          <button class="prof-tab-btn" id="profTabBtnFavorites" onclick="switchProfileTab('favorites')">
+            <i class="fa-solid fa-heart text-danger"></i> المنتجات المحفوظة (<span id="savedCountBadge">0</span>)
+          </button>
+          <button class="prof-tab-btn" id="profTabBtnAddresses" onclick="switchProfileTab('addresses')">
+            <i class="fa-solid fa-map-location-dot"></i> قائمة العناوين
+          </button>
+          <button class="prof-tab-btn" id="profTabBtnSettings" onclick="switchProfileTab('settings')">
+            <i class="fa-solid fa-gear"></i> إعدادات الحساب
+          </button>
+        </div>
+
+        <!-- 1. محتوى: طلباتي السابقة والحالية -->
+        <div id="profSectionOrders" class="prof-tab-content active">
+          <div class="prof-sec-header">
+            <h4><i class="fa-solid fa-receipt"></i> سجل الطلبات السابقة والحالية</h4>
+            <small>متابعة فورية لحالة تحضير وتوصيل أوردراتك</small>
+          </div>
+          <div id="customerOrdersHistoryList" class="cust-orders-list">
+            <!-- الطلبات تظهر هنا -->
+          </div>
+        </div>
+
+        <!-- 2. محتوى: المنتجات المحفوظة والمفضلة -->
+        <div id="profSectionFavorites" class="prof-tab-content">
+          <div class="prof-sec-header">
+            <h4><i class="fa-solid fa-heart text-danger"></i> منتجاتك المفضلة</h4>
+            <small>السلع التي قمت بحفظها لشرائها بسهولة بنقرة واحدة</small>
+          </div>
+          <div id="customerFavoritesList" class="cust-favorites-grid">
+            <!-- المنتجات المفضلة تظهر هنا -->
+          </div>
+        </div>
+
+        <!-- 3. محتوى: قائمة العناوين -->
+        <div id="profSectionAddresses" class="prof-tab-content">
+          <div class="prof-sec-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h4><i class="fa-solid fa-map-pin"></i> عناويني المحفوظة</h4>
+              <small>اختر العنوان بنقرة واحدة عند الشراء</small>
+            </div>
+            <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="toggleAddAddressForm()">
+              <i class="fa-solid fa-plus"></i> إضافة عنوان جديد
+            </button>
+          </div>
+
+          <!-- نموذج إضافة عنوان جديد -->
+          <div id="addNewAddressBox" style="display: none; background: #f8fafc; border: 1px dashed var(--border-color); padding: 14px; border-radius: 8px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label>تسمية العنوان:</label>
+              <input type="text" id="newAddrTitle" class="form-control" placeholder="مثال: المنزل، العمل، بيت العائلة">
+            </div>
+            <div class="form-row">
+              <div class="form-group col-half">
+                <label>المدينة:</label>
+                <select id="newAddrCity" class="form-control">
+                  <option value="نجع حمادي">نجع حمادي</option>
+                  <option value="فرشوط">فرشوط</option>
+                </select>
+              </div>
+              <div class="form-group col-half">
+                <label>المنطقة / الحي:</label>
+                <input type="text" id="newAddrArea" class="form-control" placeholder="مثال: شرق السكة / وسط البلد">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>تفاصيل الشارع والعمارة:</label>
+              <input type="text" id="newAddrStreet" class="form-control" placeholder="اسم الشارع ورقم العمارة والشقة">
+            </div>
+            <button class="btn-success" style="padding: 7px 16px; font-size: 0.85rem;" onclick="saveNewCustomerAddress()">
+              <i class="fa-solid fa-check"></i> حفظ العنوان
+            </button>
+          </div>
+
+          <div id="customerAddressesList" class="cust-addresses-list">
+            <!-- العناوين تظهر هنا -->
+          </div>
+        </div>
+
+        <!-- 4. محتوى: إعدادات الحساب -->
+        <div id="profSectionSettings" class="prof-tab-content">
+          <div class="prof-sec-header">
+            <h4><i class="fa-solid fa-user-pen"></i> تعديل بيانات الحساب</h4>
+            <small>تحديث الاسم أو كلمة المرور</small>
+          </div>
+          <form id="custSettingsForm" onsubmit="handleCustomerUpdateSettings(event)">
+            <div class="form-group">
+              <label>الاسم بالكامل:</label>
+              <input type="text" id="profEditName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>رقم الهاتف (اسم المستخدم الأساسي):</label>
+              <input type="tel" id="profEditPhone" class="form-control" disabled style="background: #f1f5f9; color: #64748b;">
+              <small class="help-text">رقم الهاتف مرتبط بسجل طلباتك ولا يمكن تعديله يدوياً.</small>
+            </div>
+            <div class="form-group">
+              <label>كلمة المرور الجديدة (اتركها فارغة إذا لم ترد تغييرها):</label>
+              <input type="password" id="profEditPassword" class="form-control" placeholder="اكتب كلمة مرور جديدة">
+            </div>
+            <button type="submit" class="btn-primary full-width" style="margin-top: 10px;">
+              <i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button class="btn-danger" style="padding: 7px 16px; font-size: 0.85rem;" onclick="handleCustomerLogout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج من الحساب
+        </button>
+        <button class="btn-secondary" style="padding: 7px 16px; font-size: 0.85rem;" onclick="closeCustomerProfileModal()">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 7. نافذة استعراض جميع الفئات والتفنيط -->
+  <!-- ============================================================== -->
+  <div class="modal-overlay" id="allCategoriesModal">
+    <div class="modal-card all-categories-modal-card" style="max-width: 900px;">
+      <div class="modal-header">
+        <div class="icon-circle" style="background: #dcfce7; color: #15803d;">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div>
+          <h3>جميع فئات وأقسام هايبر زايد 🛒</h3>
+          <p>تصفح الأقسام والمنتجات المتوفرة في نجع حمادي وفرشوط</p>
+        </div>
+        <button class="close-btn" onclick="closeAllCategoriesModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body all-categories-body" style="padding: 20px;">
+        <!-- شبكة كروت الفئات والرسوم المصورة -->
+        <div class="seoudi-categories-grid" id="seoudiCategoriesGrid">
+          <!-- يتم التوليد التلقائي بالجافاسكريبت -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- الفوتر المطور بتنسيق عصري متجاوب للموبايل والتابلت -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-content">
+        <!-- العمود الأول: نبذة عن الهايبر والهوية -->
+        <div class="footer-col footer-col-brand">
+          <div class="footer-brand-title">
+            <span class="footer-brand-icon">🛒</span>
+            <div>
+              <h4>هايبر زايد ماركت</h4>
+              <span class="footer-slogan">«خيره زايد»</span>
+            </div>
+          </div>
+          <p class="footer-desc">وجهتك الأولى في فرشوط ونجع حمادي لجميع الأغذية الطازجة، اللحوم البلدية، البقالة، ومستلزمات المنزل بأعلى جودة وأوفر سعر.</p>
+        </div>
+
+        <!-- العمود الثاني: أرقام التوصيل والمقر الرئيسي -->
+        <div class="footer-col footer-col-contact">
+          <h4>خدمة التوصيل والدليفري</h4>
+          <div class="footer-phones-grid">
+            <a href="tel:01003888449" class="footer-contact-pill"><i class="fa-solid fa-phone"></i> 01003888449</a>
+            <a href="tel:01097020001" class="footer-contact-pill"><i class="fa-solid fa-phone"></i> 01097020001</a>
+          </div>
+          <div class="footer-address-pill">
+            <i class="fa-solid fa-location-dot"></i> نجع حمادي - شارع المركز (بجوار مركز الشرطة)
+          </div>
+        </div>
+
+        <!-- العمود الثالث: مواعيد العمل والخدمة 24 ساعة -->
+        <div class="footer-col footer-col-hours">
+          <h4>مواعيد العمل</h4>
+          <div class="footer-hours-pill">
+            <i class="fa-solid fa-clock text-success"></i> <strong>خدمة 24 ساعة يومياً</strong>
+          </div>
+          <p class="footer-sub-note">فريق التجهيز والتوصيل في خدمتكم على مدار 24 ساعة ليلاً ونهاراً في نجع حمادي وفرشوط.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 جميع الحقوق محفوظة لـ <strong>هايبر زايد ماركت</strong> - نجع حمادي وفرشوط</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/app.js?v=11"></script>
+</body>
+</html>
